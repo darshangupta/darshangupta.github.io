@@ -51,9 +51,9 @@ function processData(data2021, data2022, data2023) {
 function initializeScenes(data) {
     // Define scenes
     const scenes = [
-        () => new BarChart("#visualization", "2021", data),
-        () => new ScatterPlot("#visualization", "2022", data),
-        () => new BarChart("#visualization", "2023", data)
+        () => new BarChart("#visualization1", "2021", data),
+        () => new ScatterPlot("#visualization2", "2022", data),
+        () => new BarChart("#visualization3", "2023", data)
     ];
 
     // Render the first scene
