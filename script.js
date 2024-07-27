@@ -117,7 +117,7 @@ function scene1(data) {
     svg.append("text")
         .attr("x", 50)
         .attr("y", 50)
-        .text("COVID Data 2021")
+        .text("COVID Data 2020")
         .attr("class", "annotation");
 }
 
