@@ -1,8 +1,7 @@
 class ScatterPlot {
-    constructor(_parentElement, _year, _data) {
+    constructor(_parentElement, _data) {
         this.parentElement = _parentElement;
-        this.year = _year;
-        this.data = _data[_year];
+        this.data = _data;
         this.initVis();
     }
 
@@ -20,8 +19,9 @@ class ScatterPlot {
             .append("g")
             .attr("transform", `translate(${vis.margin.left}, ${vis.margin.top})`);
 
-        vis.x = d3.scaleTime()
-            .range([0, vis.width]);
+        vis.x = d3.scaleBand()
+            .range([0, vis.width])
+            .padding(0.1);
 
         vis.y = d3.scaleLinear()
             .range([vis.height, 0]);
@@ -43,8 +43,11 @@ class ScatterPlot {
     updateVis() {
         const vis = this;
 
-        vis.x.domain(d3.extent(vis.data, d => d.date));
-        vis.y.domain([0, d3.max(vis.data, d => d.cases)]);
+        const selectedYear = d3.select("#year").property("value");
+        const filteredData = vis.data[selectedYear];
+
+        vis.x.domain(filteredData.map(d => d.Province_State));
+        vis.y.domain([0, d3.max(filteredData, d => d.Deaths)]);
 
         vis.svg.select(".x.axis")
             .call(vis.xAxis)
@@ -56,16 +59,16 @@ class ScatterPlot {
             .call(vis.yAxis);
 
         const circles = vis.svg.selectAll(".circle")
-            .data(vis.data);
+            .data(filteredData);
 
         circles.enter().append("circle")
             .attr("class", "circle")
-            .attr("cx", d => vis.x(d.date))
-            .attr("cy", d => vis.y(d.cases))
+            .attr("cx", d => vis.x(d.Province_State) + vis.x.bandwidth() / 2)
+            .attr("cy", d => vis.y(d.Deaths))
             .attr("r", 5)
             .merge(circles)
-            .attr("cx", d => vis.x(d.date))
-            .attr("cy", d => vis.y(d.cases))
+            .attr("cx", d => vis.x(d.Province_State) + vis.x.bandwidth() / 2)
+            .attr("cy", d => vis.y(d.Deaths))
             .attr("r", 5);
 
         circles.exit().remove();
