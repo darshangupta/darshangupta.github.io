@@ -21,14 +21,8 @@ Promise.all([
     const data2022 = files[1];
     const data2023 = files[2];
 
-    console.log("Data for 2021:", data2021);
-    console.log("Data for 2022:", data2022);
-    console.log("Data for 2023:", data2023);
-
     // Process the data
     const data = processData(data2021, data2022, data2023);
-
-    console.log("Processed Data:", data);
 
     // Initialize the visualization
     initializeScenes(data);
@@ -38,18 +32,20 @@ Promise.all([
 
 // Process the data
 function processData(data2021, data2022, data2023) {
+    const parseDate = d3.timeParse("%Y-%m-%d");
+
     // Convert data types and parse dates
     data2021.forEach(d => {
+        d.date = parseDate(d.date);
         d.cases = +d.cases;
-        d.date = d3.timeParse("%Y-%m-%d")(d.date);
     });
     data2022.forEach(d => {
+        d.date = parseDate(d.date);
         d.cases = +d.cases;
-        d.date = d3.timeParse("%Y-%m-%d")(d.date);
     });
     data2023.forEach(d => {
+        d.date = parseDate(d.date);
         d.cases = +d.cases;
-        d.date = d3.timeParse("%Y-%m-%d")(d.date);
     });
 
     return {
@@ -86,10 +82,8 @@ const yScale = d3.scaleLinear().range([height, 0]);
 const xAxis = d3.axisBottom(xScale);
 const yAxis = d3.axisLeft(yScale);
 
-// Define scenes
-function scene1(data) {
-    console.log("Scene 1 data:", data);
-
+// Define a function to create a bar chart scene
+function createBarChart(data, year) {
     xScale.domain(d3.extent(data, d => d.date));
     yScale.domain([0, d3.max(data, d => d.cases)]);
 
@@ -110,81 +104,26 @@ function scene1(data) {
         .enter().append("rect")
         .attr("class", "bar")
         .attr("x", d => xScale(d.date))
-        .attr("width", xScale.bandwidth())
+        .attr("width", xScale.bandwidth ? xScale.bandwidth() : 1)
         .attr("y", d => yScale(d.cases))
         .attr("height", d => height - yScale(d.cases));
 
     svg.append("text")
         .attr("x", 50)
         .attr("y", 50)
-        .text("COVID Data 2020")
+        .text(`COVID Data ${year}`)
         .attr("class", "annotation");
+}
+
+// Define scenes
+function scene1(data) {
+    createBarChart(data, 2021);
 }
 
 function scene2(data) {
-    console.log("Scene 2 data:", data);
-
-    xScale.domain(d3.extent(data, d => d.date));
-    yScale.domain([0, d3.max(data, d => d.cases)]);
-
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-        .selectAll("text")
-        .attr("transform", "rotate(-45)")
-        .style("text-anchor", "end");
-
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
-
-    svg.selectAll(".bar")
-        .data(data)
-        .enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", d => xScale(d.date))
-        .attr("width", xScale.bandwidth())
-        .attr("y", d => yScale(d.cases))
-        .attr("height", d => height - yScale(d.cases));
-
-    svg.append("text")
-        .attr("x", 50)
-        .attr("y", 50)
-        .text("COVID Data 2022")
-        .attr("class", "annotation");
+    createBarChart(data, 2022);
 }
 
 function scene3(data) {
-    console.log("Scene 3 data:", data);
-
-    xScale.domain(d3.extent(data, d => d.date));
-    yScale.domain([0, d3.max(data, d => d.cases)]);
-
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-        .selectAll("text")
-        .attr("transform", "rotate(-45)")
-        .style("text-anchor", "end");
-
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
-
-    svg.selectAll(".bar")
-        .data(data)
-        .enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", d => xScale(d.date))
-        .attr("width", xScale.bandwidth())
-        .attr("y", d => yScale(d.cases))
-        .attr("height", d => height - yScale(d.cases));
-
-    svg.append("text")
-        .attr("x", 50)
-        .attr("y", 50)
-        .text("COVID Data 2023")
-        .attr("class", "annotation");
+    createBarChart(data, 2023);
 }
