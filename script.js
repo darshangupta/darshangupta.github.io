@@ -21,19 +21,36 @@ Promise.all([
     const data2022 = files[1];
     const data2023 = files[2];
 
+    console.log("Data for 2021:", data2021);
+    console.log("Data for 2022:", data2022);
+    console.log("Data for 2023:", data2023);
+
     // Process the data
     const data = processData(data2021, data2022, data2023);
 
+    console.log("Processed Data:", data);
+
     // Initialize the visualization
     initializeScenes(data);
+}).catch(function(error) {
+    console.error("Error loading the data:", error);
 });
 
 // Process the data
 function processData(data2021, data2022, data2023) {
-    // Convert data types
-    data2021.forEach(d => d.cases = +d.cases);
-    data2022.forEach(d => d.cases = +d.cases);
-    data2023.forEach(d => d.cases = +d.cases);
+    // Convert data types and parse dates
+    data2021.forEach(d => {
+        d.cases = +d.cases;
+        d.date = d3.timeParse("%Y-%m-%d")(d.date);
+    });
+    data2022.forEach(d => {
+        d.cases = +d.cases;
+        d.date = d3.timeParse("%Y-%m-%d")(d.date);
+    });
+    data2023.forEach(d => {
+        d.cases = +d.cases;
+        d.date = d3.timeParse("%Y-%m-%d")(d.date);
+    });
 
     return {
         "2021": data2021,
@@ -63,7 +80,7 @@ function initializeScenes(data) {
 }
 
 // Define scales and axes
-const xScale = d3.scaleBand().range([0, width]).padding(0.1);
+const xScale = d3.scaleTime().range([0, width]);
 const yScale = d3.scaleLinear().range([height, 0]);
 
 const xAxis = d3.axisBottom(xScale);
@@ -71,7 +88,9 @@ const yAxis = d3.axisLeft(yScale);
 
 // Define scenes
 function scene1(data) {
-    xScale.domain(data.map(d => d.date));
+    console.log("Scene 1 data:", data);
+
+    xScale.domain(d3.extent(data, d => d.date));
     yScale.domain([0, d3.max(data, d => d.cases)]);
 
     svg.append("g")
@@ -103,7 +122,9 @@ function scene1(data) {
 }
 
 function scene2(data) {
-    xScale.domain(data.map(d => d.date));
+    console.log("Scene 2 data:", data);
+
+    xScale.domain(d3.extent(data, d => d.date));
     yScale.domain([0, d3.max(data, d => d.cases)]);
 
     svg.append("g")
@@ -135,7 +156,9 @@ function scene2(data) {
 }
 
 function scene3(data) {
-    xScale.domain(data.map(d => d.date));
+    console.log("Scene 3 data:", data);
+
+    xScale.domain(d3.extent(data, d => d.date));
     yScale.domain([0, d3.max(data, d => d.cases)]);
 
     svg.append("g")
