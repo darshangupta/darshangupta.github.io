@@ -44,7 +44,15 @@ class ScatterPlot {
         const vis = this;
 
         const selectedYear = d3.select("#year").property("value");
+        console.log(`Selected Year: ${selectedYear}`);  // Debugging line
+
         const filteredData = vis.data[selectedYear];
+        console.log(`Filtered Data:`, filteredData);  // Debugging line
+
+        if (!filteredData) {
+            console.error(`No data found for year ${selectedYear}`);
+            return;
+        }
 
         vis.x.domain(filteredData.map(d => d.Province_State));
         vis.y.domain([0, d3.max(filteredData, d => d.Deaths)]);

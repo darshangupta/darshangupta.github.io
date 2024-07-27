@@ -10,6 +10,7 @@ Promise.all([
 
     // Process the data
     const data = processData(data2021, data2022, data2023);
+    console.log(`Processed Data:`, data);  // Debugging line
 
     // Initialize the scatter plot visualization
     const scatterPlot = new ScatterPlot("#visualization", data);
